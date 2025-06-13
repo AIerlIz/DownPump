@@ -9,8 +9,8 @@ WORKDIR /app
 # 复制下载脚本到容器中
 COPY download.sh /app/
 
-# 给脚本添加执行权限
-RUN chmod +x /app/download.sh
+# 确保脚本使用Unix格式的行尾并添加执行权限
+RUN sed -i 's/\r$//' /app/download.sh && chmod +x /app/download.sh
 
 # 设置环境变量，可以通过环境变量控制下载行为
 ENV DOWNLOAD_INTERVAL=5 \

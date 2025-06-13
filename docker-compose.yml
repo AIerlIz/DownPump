@@ -17,3 +17,4 @@ services:
       - DOWNLOAD_SPEED_LIMIT=0
     volumes:
       - ./logs:/app/logs
+      - ./download.sh:/app/download.sh:ro

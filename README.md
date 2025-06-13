@@ -1,4 +1,4 @@
-# DownPump 下载泵 Docker 镜像
+# DownPump 下载泵
 
 DownPump（下载泵）是一个 Docker 镜像，用于创建一个持续下载数据的容器，可以用于网络测试、带宽测试或其他需要持续产生下载流量的场景。
 
