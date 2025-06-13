@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   downpump:
     build:
@@ -9,7 +7,7 @@ services:
     restart: unless-stopped
     environment:
       - DOWNLOAD_INTERVAL=5
-      - DOWNLOAD_URLS=http://speedtest.ftp.otenet.gr/files/test10Mb.db http://speedtest.tele2.net/10MB.zip
+      - DOWNLOAD_URLS=http://speedtest.ftp.otenet.gr/files/test100Mb.db http://speedtest.tele2.net/100MB.zip
       - DAILY_TRAFFIC_LIMIT=1
       - DOWNLOAD_START_TIME=09:00
       - DOWNLOAD_END_TIME=18:00
@@ -17,4 +15,3 @@ services:
       - DOWNLOAD_SPEED_LIMIT=0
     volumes:
       - ./logs:/app/logs
-      - ./download.sh:/app/download.sh:ro
