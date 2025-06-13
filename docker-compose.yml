@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  downpump:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: downpump
+    restart: unless-stopped
+    environment:
+      - DOWNLOAD_INTERVAL=5
+      - DOWNLOAD_URLS=http://speedtest.ftp.otenet.gr/files/test10Mb.db http://speedtest.tele2.net/10MB.zip
+      - DAILY_TRAFFIC_LIMIT=1
+      - DOWNLOAD_START_TIME=09:00
+      - DOWNLOAD_END_TIME=18:00
+      - TRAFFIC_LOG_FILE=/app/traffic.log
+      - DOWNLOAD_SPEED_LIMIT=0
+    volumes:
+      - ./logs:/app/logs
