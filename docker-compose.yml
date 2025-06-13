@@ -1,10 +1,8 @@
 services:
   downpump:
-    build:
-      context: .
-      dockerfile: Dockerfile
     container_name: downpump
     restart: unless-stopped
+    network_mode: bridge
     environment:
       - DOWNLOAD_INTERVAL=5
       - DOWNLOAD_URLS=http://speedtest.ftp.otenet.gr/files/test100Mb.db http://speedtest.tele2.net/100MB.zip
