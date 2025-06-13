@@ -1,87 +1,120 @@
-# DownPump
+# DownPump 下载泵
 
-一个基于Docker的下载泵工具，可以按照设定的时间和流量限制自动下载文件。
+DownPump（下载泵）是一个 Docker 镜像，用于创建一个持续下载数据的容器，可以用于网络测试、带宽测试或其他需要持续产生下载流量的场景。
 
 ## 功能特点
 
-- 支持多URL下载
-- 可设置下载时间段
-- 可设置每日流量上限
-- 可设置下载速度限制
-- 自动记录流量使用情况
+- 持续从指定的URL下载数据
+- 可配置下载间隔时间
+- 可配置多个下载源
+- 实时显示下载进度和统计信息
+- 支持设置每日流量上限，超出后自动暂停至次日
+- 支持设置下载时间段，只在指定时间内下载
+- 支持设置下载速度限制，控制带宽使用
+- 自动记录每日下载流量，保存到日志文件
+- 轻量级设计，基于Alpine Linux
 
-## 使用方法
+## 构建镜像
 
-### 本地运行
-
-1. 克隆仓库
-   ```bash
-   git clone https://github.com/yourusername/DownPump.git
-   cd DownPump
-   ```
-
-2. 修改配置
-   在`docker-compose.yml`文件中修改环境变量：
-   ```yaml
-   environment:
-     - DOWNLOAD_INTERVAL=5            # 下载间隔（秒）
-     - DOWNLOAD_URLS=http://example.com/file1 http://example.com/file2  # 下载链接，空格分隔
-     - DAILY_TRAFFIC_LIMIT=1          # 每日流量上限（GB）
-     - DOWNLOAD_START_TIME=09:00      # 下载开始时间
-     - DOWNLOAD_END_TIME=18:00        # 下载结束时间
-     - TRAFFIC_LOG_FILE=/app/traffic.log  # 流量日志文件
-     - DOWNLOAD_SPEED_LIMIT=0         # 下载速度限制（MB/s），0表示不限速
-   ```
-
-3. 启动容器
-   ```bash
-   docker-compose up -d
-   ```
-
-### 使用Docker Hub镜像
+在包含Dockerfile的目录中执行以下命令构建Docker镜像：
 
 ```bash
-docker run -d \
-  --name downpump \
-  -e DOWNLOAD_INTERVAL=5 \
-  -e DOWNLOAD_URLS="http://example.com/file1 http://example.com/file2" \
-  -e DAILY_TRAFFIC_LIMIT=1 \
-  -e DOWNLOAD_START_TIME=09:00 \
-  -e DOWNLOAD_END_TIME=18:00 \
-  -e TRAFFIC_LOG_FILE=/app/traffic.log \
-  -e DOWNLOAD_SPEED_LIMIT=0 \
-  -v ./logs:/app/logs \
-  yourusername/downpump:latest
+docker build -t downpump .
 ```
 
-## GitHub Actions 自动构建
+## 运行容器
 
-本项目使用GitHub Actions自动构建Docker镜像并发布到Docker Hub。
+### 使用Docker命令运行
 
-### 设置步骤
+#### 使用默认配置运行
 
-1. 在GitHub仓库中，进入 Settings -> Secrets and variables -> Actions
-2. 添加以下密钥：
-   - `DOCKERHUB_USERNAME`: 你的Docker Hub用户名
-   - `DOCKERHUB_TOKEN`: 你的Docker Hub访问令牌（不是密码）
+```bash
+docker run -d --name downpump downpump
+```
 
-### 触发构建
+#### 自定义配置示例
 
-以下操作会触发自动构建：
+```bash
+docker run -d --name downpump \
+  -e DOWNLOAD_INTERVAL=10 \
+  -e DOWNLOAD_URLS="http://speedtest.ftp.otenet.gr/files/test100Mb.db http://speedtest.tele2.net/100MB.zip" \
+  -e DAILY_TRAFFIC_LIMIT=2 \
+  -e DOWNLOAD_START_TIME="08:30" \
+  -e DOWNLOAD_END_TIME="17:30" \
+  -e DOWNLOAD_SPEED_LIMIT=1 \
+  downpump
+```
 
-- 向`main`分支推送代码
-- 创建Pull Request到`main`分支
-- 创建版本标签（格式：`v*.*.*`，例如`v1.0.0`）
+### 使用Docker Compose运行
 
-### 镜像标签
+项目中提供了`docker-compose.yml`文件，可以使用Docker Compose更方便地管理容器：
 
-- `latest`: 最新的`main`分支构建
-- `vX.Y.Z`: 对应版本标签
-- `vX.Y`: 主要和次要版本
-- 分支名: 对应分支的最新构建
-- SHA: 提交的短SHA值
+#### 使用默认配置运行
+
+```bash
+docker-compose up -d
+```
+
+#### 自定义配置
+
+您可以编辑`docker-compose.yml`文件，修改环境变量的值来自定义配置：
+
+```yaml
+version: '3'
+
+services:
+  downpump:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: downpump
+    restart: unless-stopped
+    environment:
+      - DOWNLOAD_INTERVAL=10
+      - DOWNLOAD_URLS=http://speedtest.ftp.otenet.gr/files/test100Mb.db http://speedtest.tele2.net/100MB.zip
+      - DAILY_TRAFFIC_LIMIT=2
+      - DOWNLOAD_START_TIME=08:30
+      - DOWNLOAD_END_TIME=17:30
+      - DOWNLOAD_SPEED_LIMIT=1
+    volumes:
+      - ./logs:/app/logs
+```
+
+## 环境变量
+
+| 环境变量 | 描述 | 默认值 |
+|----------|------|--------|
+| `DOWNLOAD_INTERVAL` | 每轮下载之间的等待时间（秒） | 5 |
+| `DOWNLOAD_URLS` | 要下载的URL列表，用空格分隔 | "http://speedtest.ftp.otenet.gr/files/test10Mb.db http://speedtest.tele2.net/10MB.zip" |
+| `DAILY_TRAFFIC_LIMIT` | 每日下载流量上限（GB），超出后暂停至次日 | 1 |
+| `DOWNLOAD_START_TIME` | 允许下载的开始时间（24小时制，格式：HH:MM） | "09:00" |
+| `DOWNLOAD_END_TIME` | 允许下载的结束时间（24小时制，格式：HH:MM） | "18:00" |
+| `TRAFFIC_LOG_FILE` | 流量日志文件路径 | "/app/traffic.log" |
+| `DOWNLOAD_SPEED_LIMIT` | 下载速度限制（MB/s），设为0表示不限速 | 0 |
+
+## 查看日志
+
+```bash
+docker logs -f downpump
+```
+
+## 停止容器
+
+### 使用Docker命令停止
+
+```bash
+docker stop downpump
+```
+
+### 使用Docker Compose停止
+
+```bash
+docker-compose down
+```
 
 ## 注意事项
 
-- 确保`download.sh`脚本有执行权限
-- Windows用户可能需要处理行尾符号问题（CRLF vs LF）
+- 此容器会持续产生网络流量，请注意您的网络使用情况
+- 下载的文件不会保存在容器中，而是直接输出到/dev/null，不占用任何磁盘空间
+- 容器运行过程中不会因为下载文件而增加磁盘占用
+- 如果您需要测试更大的带宽，可以增加下载源的数量或选择更大的文件
