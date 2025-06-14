@@ -1,15 +1,13 @@
+version: '3'
+
 services:
   downpump:
+    build: .
     container_name: downpump
     restart: unless-stopped
-    network_mode: bridge
-    environment:
-      - DOWNLOAD_INTERVAL=5
-      - DOWNLOAD_URLS=http://speedtest.ftp.otenet.gr/files/test100Mb.db http://speedtest.tele2.net/100MB.zip
-      - DAILY_TRAFFIC_LIMIT=1
-      - DOWNLOAD_START_TIME=09:00
-      - DOWNLOAD_END_TIME=18:00
-      - TRAFFIC_LOG_FILE=/app/traffic.log
-      - DOWNLOAD_SPEED_LIMIT=0
+    ports:
+      - "8080:8080"
     volumes:
       - ./logs:/app/logs
+    environment:
+      - TZ=Asia/Shanghai

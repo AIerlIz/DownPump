@@ -4,6 +4,7 @@ DownPump（下载泵）是一个 Docker 镜像，用于创建一个持续下载�
 
 ## 功能特点
 
+- WebUI仪表盘和配置界面
 - 持续从指定的URL下载数据
 - 可配置下载间隔时间
 - 可配置多个下载源
@@ -13,104 +14,61 @@ DownPump（下载泵）是一个 Docker 镜像，用于创建一个持续下载�
 - 支持设置下载速度限制，控制带宽使用
 - 自动记录每日下载流量，保存到日志文件
 - 轻量级设计，基于Alpine Linux
+- 支持Docker Compose部署
 
-## 构建镜像
+## 安装与使用
 
-在包含Dockerfile的目录中执行以下命令构建Docker镜像：
+### 前提条件
 
-```bash
-docker build -t downpump .
-```
+- 安装 [Docker](https://docs.docker.com/get-docker/)
+- 安装 [Docker Compose](https://docs.docker.com/compose/install/) (可选，但推荐)
 
-## 运行容器
+### 使用 Docker Compose 部署
 
-### 使用Docker命令运行
-
-#### 使用默认配置运行
+1. 克隆仓库
 
 ```bash
-docker run -d --name downpump downpump
+git clone https://github.com/yourusername/downpump.git
+cd downpump
 ```
 
-#### 自定义配置示例
-
-```bash
-docker run -d --name downpump \
-  -e DOWNLOAD_INTERVAL=10 \
-  -e DOWNLOAD_URLS="http://speedtest.ftp.otenet.gr/files/test100Mb.db http://speedtest.tele2.net/100MB.zip" \
-  -e DAILY_TRAFFIC_LIMIT=2 \
-  -e DOWNLOAD_START_TIME="08:30" \
-  -e DOWNLOAD_END_TIME="17:30" \
-  -e DOWNLOAD_SPEED_LIMIT=1 \
-  downpump
-```
-
-### 使用Docker Compose运行
-
-项目中提供了`docker-compose.yml`文件，可以使用Docker Compose更方便地管理容器：
-
-#### 使用默认配置运行
+2. 构建并启动容器
 
 ```bash
 docker-compose up -d
 ```
 
-#### 自定义配置
+3. 访问WebUI
 
-您可以编辑`docker-compose.yml`文件，修改环境变量的值来自定义配置：
+打开浏览器，访问 `http://localhost:8080`
 
-```yaml
-version: '3'
+### 使用 Docker 命令部署
 
-services:
-  downpump:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: downpump
-    restart: unless-stopped
-    environment:
-      - DOWNLOAD_INTERVAL=10
-      - DOWNLOAD_URLS=http://speedtest.ftp.otenet.gr/files/test100Mb.db http://speedtest.tele2.net/100MB.zip
-      - DAILY_TRAFFIC_LIMIT=2
-      - DOWNLOAD_START_TIME=08:30
-      - DOWNLOAD_END_TIME=17:30
-      - DOWNLOAD_SPEED_LIMIT=1
-    volumes:
-      - ./logs:/app/logs
-```
-
-## 环境变量
-
-| 环境变量 | 描述 | 默认值 |
-|----------|------|--------|
-| `DOWNLOAD_INTERVAL` | 每轮下载之间的等待时间（秒） | 5 |
-| `DOWNLOAD_URLS` | 要下载的URL列表，用空格分隔 | "http://speedtest.ftp.otenet.gr/files/test10Mb.db http://speedtest.tele2.net/10MB.zip" |
-| `DAILY_TRAFFIC_LIMIT` | 每日下载流量上限（GB），超出后暂停至次日 | 1 |
-| `DOWNLOAD_START_TIME` | 允许下载的开始时间（24小时制，格式：HH:MM） | "09:00" |
-| `DOWNLOAD_END_TIME` | 允许下载的结束时间（24小时制，格式：HH:MM） | "18:00" |
-| `TRAFFIC_LOG_FILE` | 流量日志文件路径 | "/app/traffic.log" |
-| `DOWNLOAD_SPEED_LIMIT` | 下载速度限制（MB/s），设为0表示不限速 | 0 |
-
-## 查看日志
+1. 构建镜像
 
 ```bash
-docker logs -f downpump
+docker build -t downpump .
 ```
 
-## 停止容器
-
-### 使用Docker命令停止
+2. 运行容器
 
 ```bash
-docker stop downpump
+docker run -d --name downpump -p 8080:8080 -v $(pwd)/logs:/app/logs downpump
 ```
 
-### 使用Docker Compose停止
+3. 访问WebUI
 
-```bash
-docker-compose down
-```
+打开浏览器，访问 `http://localhost:8080`
+
+## 配置说明
+
+通过WebUI界面，您可以配置以下参数：
+
+- **下载源**：可添加多个下载URL，支持启用/禁用单个源
+- **下载间隔**：每次下载完成后的等待时间（秒）
+- **每日流量限制**：设置每日最大下载流量（GB），超出后自动暂停至次日
+- **下载速度限制**：限制下载速度（KB/s）
+- **活跃时间段**：设置只在特定时间段内下载
 
 ## 注意事项
 
@@ -118,3 +76,25 @@ docker-compose down
 - 下载的文件不会保存在容器中，而是直接输出到/dev/null，不占用任何磁盘空间
 - 容器运行过程中不会因为下载文件而增加磁盘占用
 - 如果您需要测试更大的带宽，可以增加下载源的数量或选择更大的文件
+
+## 开发
+
+### 前端开发
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+### 后端开发
+
+```bash
+cd backend
+pip install -r requirements.txt
+python app.py
+```
+
+## 许可证
+
+MIT

@@ -1,0 +1,56 @@
+/* 全局样式 */
+.site-layout .site-layout-background {
+  background: #fff;
+}
+
+/* Logo样式 */
+.logo {
+  height: 32px;
+  margin: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* 加载中样式 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+}
+
+/* 仪表盘卡片样式 */
+.dashboard-card {
+  margin-bottom: 24px;
+}
+
+/* 统计数字样式 */
+.stat-number {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* 控制按钮样式 */
+.control-buttons {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* 表单样式 */
+.settings-form {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* 历史图表容器 */
+.chart-container {
+  margin-top: 24px;
+  height: 400px;
+}

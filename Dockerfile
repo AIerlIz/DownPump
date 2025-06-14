@@ -1,25 +1,32 @@
 FROM alpine:latest
 
-# 安装必要的工具
-RUN apk add --no-cache curl wget bash bc sed
+# 安装必要的软件包
+RUN apk add --no-cache \
+    curl \
+    wget \
+    bash \
+    nodejs \
+    npm \
+    python3 \
+    py3-pip \
+    tzdata
 
-# 创建工作目录
+# 设置工作目录
 WORKDIR /app
 
-# 复制下载脚本到容器中
-COPY download.sh /app/
+# 复制应用文件
+COPY ./backend /app/backend
+COPY ./frontend/build /app/frontend
 
-# 确保脚本使用Unix格式的行尾并添加执行权限
-RUN sed -i 's/\r$//' /app/download.sh && chmod +x /app/download.sh
+# 安装Python依赖
+RUN pip3 install --no-cache-dir -r /app/backend/requirements.txt
 
-# 设置环境变量，可以通过环境变量控制下载行为
-ENV DOWNLOAD_INTERVAL=5 \
-    DOWNLOAD_URLS="http://speedtest.ftp.otenet.gr/files/test10Mb.db http://speedtest.tele2.net/10MB.zip" \
-    DAILY_TRAFFIC_LIMIT=1 \
-    DOWNLOAD_START_TIME="09:00" \
-    DOWNLOAD_END_TIME="18:00" \
-    TRAFFIC_LOG_FILE="/app/traffic.log" \
-    DOWNLOAD_SPEED_LIMIT=0
+# 设置时区为亚洲/上海
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone
 
-# 运行下载脚本
-CMD ["/app/download.sh"]
+# 暴露端口
+EXPOSE 8080
+
+# 启动应用
+CMD ["python3", "/app/backend/app.py"]
