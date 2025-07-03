@@ -52,3 +52,12 @@ jobs:
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          # 优化构建选项
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
+          # 启用BuildKit构建器
+          provenance: false
+          sbom: false
+          # 优化镜像压缩
+          compression: zstd
+          compression-level: 22
