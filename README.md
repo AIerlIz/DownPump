@@ -166,8 +166,13 @@ python downpump.py
 
 ### 触发条件
 
-以下文件变更时会触发自动构建：
-- `downpump.py`
-- `Dockerfile`
-- `requirements.txt`
-- `.github/workflows/docker-publish.yml`
+以下情况会触发自动构建：
+1. 以下文件变更并推送到main分支时：
+   - `downpump.py`
+   - `Dockerfile`
+   - `requirements.txt`
+   - `.github/workflows/docker-publish.yml`
+2. 手动触发：
+   - 在GitHub仓库页面，点击「Actions」
+   - 选择「Docker 镜像构建与发布」工作流
+   - 点击「Run workflow」按钮，选择分支并触发构建
