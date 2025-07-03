@@ -2,6 +2,9 @@ version: '3'
 
 services:
   downpump:
+    # 使用DockerHub镜像（取消注释并替换为你的DockerHub用户名）
+    # image: 用户名/downpump:latest
+    # 或使用本地构建
     build: .
     container_name: downpump
     volumes:

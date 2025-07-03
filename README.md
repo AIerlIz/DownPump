@@ -12,6 +12,7 @@ DownPump 是一个用于消耗并记录下载流量的工具，可以配置下�
 - 配置下载速度限制（单位：MB/s）
 - 自动创建下一个可下载时间的定时任务
 - 支持Docker部署
+- 支持GitHub Actions自动构建和发布Docker镜像
 
 ## 配置说明
 
@@ -47,6 +48,24 @@ download_urls:
 
 ## 使用方法
 
+### 使用 DockerHub 镜像（最简单）
+
+1. 确保已安装 Docker
+2. 创建 `config.yaml` 配置文件
+3. 创建 `logs` 目录
+4. 运行 Docker 容器：
+
+```bash
+docker run -d \
+  --name downpump \
+  -v $(pwd)/logs:/app/logs \
+  -v $(pwd)/config.yaml:/app/config.yaml \
+  --restart unless-stopped \
+  用户名/downpump:latest
+```
+
+> 注意：请将 `用户名` 替换为实际的 DockerHub 用户名
+
 ### 使用 Docker Compose（推荐）
 
 1. 确保已安装 Docker 和 Docker Compose
@@ -58,7 +77,7 @@ download_urls:
 docker-compose up -d
 ```
 
-### 使用 Docker
+### 使用 Docker 本地构建
 
 1. 构建 Docker 镜像：
 
@@ -132,3 +151,23 @@ python downpump.py
 - 程序只消耗下载流量，不会将数据写入磁盘
 - 每日下载量统计在程序重启后会重置，如需持久化可以修改代码实现
 - 即使在下载时间段内，如果达到每日下载上限，程序也会停止下载
+
+## GitHub Actions 自动构建
+
+本项目配置了GitHub Actions工作流，当代码推送到main分支时，会自动构建Docker镜像并发布到DockerHub。
+
+### 设置步骤
+
+1. Fork本仓库到你的GitHub账号
+2. 在GitHub仓库设置中添加以下Secrets：
+   - `DOCKERHUB_USERNAME`: 你的DockerHub用户名
+   - `DOCKERHUB_TOKEN`: 你的DockerHub访问令牌（在DockerHub的Account Settings > Security中创建）
+3. 推送代码到main分支，GitHub Actions将自动构建并发布镜像
+
+### 触发条件
+
+以下文件变更时会触发自动构建：
+- `downpump.py`
+- `Dockerfile`
+- `requirements.txt`
+- `.github/workflows/docker-publish.yml`
