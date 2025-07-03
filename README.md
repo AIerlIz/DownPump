@@ -13,6 +13,7 @@ DownPump 是一个用于消耗并记录下载流量的工具，可以配置下�
 - 自动创建下一个可下载时间的定时任务
 - 支持Docker部署
 - 支持GitHub Actions自动构建和发布Docker镜像
+- 支持多架构Docker镜像（amd64和arm64）
 
 ## 配置说明
 
@@ -154,7 +155,7 @@ python downpump.py
 
 ## GitHub Actions 自动构建
 
-本项目配置了GitHub Actions工作流，当代码推送到main分支时，会自动构建Docker镜像并发布到DockerHub。
+本项目配置了GitHub Actions工作流，当代码推送到main分支时，会自动构建Docker镜像并发布到DockerHub。自动构建支持多架构（amd64和arm64），可在不同CPU架构的设备上运行。
 
 ### 设置步骤
 

@@ -1,5 +1,6 @@
 services:
   downpump:
+    # 自动选择适合当前系统架构的镜像（支持amd64和arm64）
     image: aierliz/downpump:latest
     container_name: downpump
     restart: unless-stopped
