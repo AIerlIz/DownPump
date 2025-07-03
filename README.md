@@ -62,7 +62,7 @@ docker run -d \
   -v $(pwd)/logs:/app/logs \
   -v $(pwd)/config.yaml:/app/config.yaml \
   --restart unless-stopped \
-  用户名/downpump:latest
+  aierliz/downpump:latest
 ```
 
 > 注意：请将 `用户名` 替换为实际的 DockerHub 用户名
