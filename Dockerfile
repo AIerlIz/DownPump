@@ -1,32 +1,25 @@
-FROM alpine:latest
+FROM python:3.9-slim
 
-# 安装必要的软件包
-RUN apk add --no-cache \
-    curl \
-    wget \
-    bash \
-    nodejs \
-    npm \
-    python3 \
-    py3-pip \
-    tzdata
-
-# 设置工作目录
 WORKDIR /app
 
-# 复制应用文件
-COPY ./backend /app/backend
-COPY ./frontend/build /app/frontend
-
-# 安装Python依赖
-RUN pip3 install --no-cache-dir -r /app/backend/requirements.txt
-
 # 设置时区为亚洲/上海
-RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && echo "Asia/Shanghai" > /etc/timezone
+RUN apt-get update && \
+    apt-get install -y tzdata && \
+    ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# 暴露端口
-EXPOSE 8080
+# 复制依赖文件并安装依赖
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# 启动应用
-CMD ["python3", "/app/backend/app.py"]
+# 复制应用程序文件
+COPY downpump.py .
+COPY config.yaml .
+
+# 设置卷，用于持久化日志
+VOLUME ["/app/logs"]
+
+# 运行应用
+CMD ["python", "downpump.py"]

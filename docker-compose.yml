@@ -4,10 +4,9 @@ services:
   downpump:
     build: .
     container_name: downpump
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
     volumes:
       - ./logs:/app/logs
+      - ./config.yaml:/app/config.yaml
+    restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai

@@ -1,0 +1,29 @@
+# DownPump 配置文件
+
+# 注意：程序已修改为不写入磁盘，仅消耗下载流量
+
+# 每日下载流量上限 (GB)
+daily_limit_gb: 10
+
+# 下载速度限制 (MB/s)
+speed_limit_mb: 5
+
+# 流量记录间隔 (秒)
+record_interval_seconds: 60
+
+# 下载时间段配置（允许下载的时间范围）
+# 只要当前时间在任何一个配置的时间段内，程序就会进行下载
+# 可以配置多个不连续的时间段，程序会在每个时间段内自动下载
+# 如果不配置任何时间段，程序会默认全天候下载
+download_time_ranges:
+  - start: "01:00"  # 开始时间 (24小时制)
+    end: "07:00"    # 结束时间 (24小时制)
+  - start: "23:00"  # 开始时间 (24小时制)
+    end: "00:00"    # 结束时间 (24小时制)
+
+# 下载URL列表 (随机选择)
+download_urls:
+  - "https://speed.hetzner.de/100MB.bin"
+  - "https://proof.ovh.net/files/100Mb.dat"
+  - "https://speed.cloudflare.com/100mb.bin"
+  - "https://download.thinkbroadband.com/100MB.zip"
